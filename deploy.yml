@@ -1,0 +1,22 @@
+---
+- name: Pull and Run Docker Image from Docker Hub
+  hosts: localhost
+  become: false
+
+  tasks:
+    - name: Pull Docker Image
+      docker_image:
+        name: "swayam614/calculator"
+        source: pull
+      register: docker_pull_result
+
+    - name: Display Docker Pull Result
+      debug:
+        var: docker_pull_result
+
+    - name: Remove existing calculator container if any
+      shell: docker rm -f calculator
+      ignore_errors: yes
+
+    - name: Run calculator container
+      shell: docker run -d --name calculator swayam614/calculator
