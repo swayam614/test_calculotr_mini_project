@@ -6,10 +6,11 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE_NAME = 'calculator'
-        DOCKER_HUB_USERNAME = 'swayam614'   // 🔁 change if needed
-        GITHUB_REPO_URL = 'https://github.com/swayam614/test_calculotr_mini_project.git'
+    DOCKER_IMAGE_NAME = 'calculator'
+    GITHUB_REPO_URL = 'https://github.com/swayam614/test_calculotr_mini_project.git'
+    PATH = "/usr/local/bin:/opt/homebrew/bin:/bin:/usr/bin:/usr/sbin:/sbin"
     }
+
 
     stages {
 
