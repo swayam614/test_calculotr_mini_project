@@ -31,23 +31,24 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            steps {
-                script {
-                echo 'Logging into Docker Hub...'
-                withCredentials([usernamePassword(
-                    credentialsId: 'DockerHubCred',
-                    usernameVariable: 'swayam614',
-                    passwordVariable: 'Swayam@9083'
-                    )]) {
-                        sh '''
-                        docker login -u $DOCKER_USER -p $DOCKER_PASS
-                        docker tag calculator swayam614/calculator:latest
-                        docker push swayam614/calculator:latest
-                        '''
-                    }
-                }
+    steps {
+        script {
+            echo 'Logging into Docker Hub...'
+            withCredentials([usernamePassword(
+                credentialsId: 'DockerHubCred',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS'
+            )]) {
+                sh '''
+                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                docker tag calculator swayam614/calculator:latest
+                docker push swayam614/calculator:latest
+                '''
             }
         }
+    }
+}
+
 
 
         stage('Run Ansible Playbook') {
