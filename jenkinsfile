@@ -1,54 +1,56 @@
 pipeline {
     agent any
+
     triggers { 
-      githubPush() 
-   }
+        githubPush() 
+    }
+
     environment {
         DOCKER_IMAGE_NAME = 'calculator'
-        GITHUB_REPO_URL = 'https://github.com/BThangaraju/MiniProject.git'
+        DOCKER_HUB_USERNAME = 'swayam614'   // 🔁 change if needed
+        GITHUB_REPO_URL = 'https://github.com/swayam614/test_calculotr_mini_project.git'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                script {
-                    // Checkout the code from the GitHub repository
-                    git branch: 'main', url: "${GITHUB_REPO_URL}"
-                }
+                echo 'Cloning GitHub repository...'
+                git branch: 'main', url: "${GITHUB_REPO_URL}"
             }
         }
 
         stage('Build Docker Image') {
             steps {
+                echo 'Building Docker image...'
                 script {
-                    // Build Docker image
-                    docker.build("${DOCKER_IMAGE_NAME}", '.')
+                    docker.build("${DOCKER_IMAGE_NAME}", ".")
                 }
             }
         }
 
-        stage('Push Docker Images') {
+        stage('Push Docker Image') {
             steps {
-                script{
+                echo 'Pushing Docker image to Docker Hub...'
+                script {
                     docker.withRegistry('', 'DockerHubCred') {
-                    sh 'docker tag calculator iiitb/calculator:latest'
-                    sh 'docker push iiitb/calculator'
+                        sh """
+                        docker tag ${DOCKER_IMAGE_NAME} ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                        docker push ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME}:latest
+                        """
                     }
-                 }
-            }
-        }
-
-   stage('Run Ansible Playbook') {
-            steps {
-                script {
-                    ansiblePlaybook(
-                        playbook: 'deploy.yml',
-                        inventory: 'inventory'
-                     )
                 }
             }
         }
 
+        stage('Run Ansible Playbook') {
+            steps {
+                echo 'Running Ansible playbook...'
+                ansiblePlaybook(
+                    playbook: 'deploy.yml',
+                    inventory: 'inventory'
+                )
+            }
+        }
     }
 }
-
