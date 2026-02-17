@@ -52,13 +52,16 @@ pipeline {
 
 
         stage('Run Ansible Playbook') {
-            steps {
-                echo 'Running Ansible playbook...'
-                ansiblePlaybook(
-                    playbook: 'deploy.yml',
-                    inventory: 'inventory'
-                )
-            }
+    steps {
+        script {
+            echo 'Running Ansible playbook...'
+            sh '''
+            export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+            ansible-playbook deploy.yml -i inventory
+            '''
         }
+    }
+}
+
     }
 }
