@@ -32,17 +32,23 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                echo 'Pushing Docker image to Docker Hub...'
                 script {
-                    docker.withRegistry('', 'DockerHubCred') {
-                        sh """
-                        docker tag ${DOCKER_IMAGE_NAME} ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME}:latest
-                        docker push ${DOCKER_HUB_USERNAME}/${DOCKER_IMAGE_NAME}:latest
-                        """
+                echo 'Logging into Docker Hub...'
+                withCredentials([usernamePassword(
+                    credentialsId: 'DockerHubCred',
+                    usernameVariable: 'swayam614',
+                    passwordVariable: 'Swayam@9083'
+                    )]) {
+                        sh '''
+                        docker login -u $DOCKER_USER -p $DOCKER_PASS
+                        docker tag calculator swayam614/calculator:latest
+                        docker push swayam614/calculator:latest
+                        '''
                     }
                 }
             }
         }
+
 
         stage('Run Ansible Playbook') {
             steps {
